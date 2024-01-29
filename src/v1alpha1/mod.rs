@@ -4,6 +4,7 @@ mod zone;
 use std::fmt::Display;
 
 pub use dnsrecord::*;
+use kubizone_common::DomainName;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use zone::*;
@@ -37,9 +38,9 @@ impl Display for ZoneRef {
 }
 
 /// Authority on whether a domain matches a domain pattern.
-pub fn domain_matches_pattern(pattern: &str, domain: &str) -> bool {
+pub fn domain_matches_pattern(pattern: &str, domain: &DomainName) -> bool {
     let pattern_segments: Vec<_> = pattern.split('.').rev().collect();
-    let domain_segments: Vec<_> = domain.split('.').rev().collect();
+    let domain_segments: Vec<_> = domain.as_ref().split('.').rev().collect();
 
     // If domain and pattern contain an unequal number of segments, and the first
     // segment of the pattern is not a plain wildcard, then this pattern cannot match.
@@ -71,50 +72,61 @@ pub mod defaults {
 
 #[cfg(test)]
 mod tests {
+    use kubizone_common::PartiallyQualifiedDomainName;
+
     use crate::v1alpha1::domain_matches_pattern;
 
     #[test]
     fn pattern_matching() {
         // Should match on exact equivalence.
-        assert!(domain_matches_pattern("www.example.org", "www.example.org"));
+        assert!(domain_matches_pattern(
+            "www.example.org",
+            &PartiallyQualifiedDomainName("www.example.org".to_string()).into()
+        ));
 
         // Should match on simple wildcard substitution.
-        assert!(domain_matches_pattern("*.example.org", "www.example.org"));
+        assert!(domain_matches_pattern(
+            "*.example.org",
+            &PartiallyQualifiedDomainName("www.example.org".to_string()).into()
+        ));
 
         // Should match arbitrary prefixes and segments, if first segment is plain
         // wildcard.
         assert!(domain_matches_pattern(
             "*.example.org",
-            "www.test.example.org"
+            &PartiallyQualifiedDomainName("www.test.example.org".to_string()).into()
         ));
 
         // Should NOT match arbitrary prefixes and segments, if first segment
         // is *made up of* wildcard and other values.
         assert!(!domain_matches_pattern(
             "env-*.example.org",
-            "www.env-dev.example.org"
+            &PartiallyQualifiedDomainName("www.env-dev.example.org".to_string()).into()
         ));
 
         // Should match if first segment is plain wildcard, and higher segments
         // match, but are partial wildcards.
         assert!(domain_matches_pattern(
             "*.env-*.example.org",
-            "www.env-dev.example.org"
+            &PartiallyQualifiedDomainName("www.env-dev.example.org".to_string()).into()
         ));
 
         // Should NOT match subdomains of explicit paths without wildcards.
-        assert!(!domain_matches_pattern("example.org", "www.example.org"));
+        assert!(!domain_matches_pattern(
+            "example.org",
+            &PartiallyQualifiedDomainName("www.example.org".to_string()).into()
+        ));
 
         // Should match on non-prefix wildcard.
         assert!(domain_matches_pattern(
             "www.*.example.org",
-            "www.test.example.org"
+            &PartiallyQualifiedDomainName("www.test.example.org".to_string()).into()
         ));
 
         // Should not match on secondary subdivision.
         assert!(!domain_matches_pattern(
             "www.*.example.org",
-            "www.subdomain.test.example.org"
+            &PartiallyQualifiedDomainName("www.subdomain.test.example.org".to_string()).into()
         ));
     }
 }

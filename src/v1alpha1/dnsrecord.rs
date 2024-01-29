@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 use kube::{CustomResource, ResourceExt};
+use kubizone_common::DomainName;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -32,7 +33,7 @@ use super::ZoneRef;
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RecordSpec {
-    pub domain_name: String,
+    pub domain_name: DomainName,
     pub zone_ref: Option<ZoneRef>,
     #[serde(rename = "type")]
     pub type_: String,

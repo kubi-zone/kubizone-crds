@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 use kube::{core::object::HasSpec, CustomResource, ResourceExt};
+use kubizone_common::DomainName;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tracing::*;
@@ -76,7 +77,7 @@ pub mod defaults {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ZoneSpec {
-    pub domain_name: String,
+    pub domain_name: DomainName,
 
     /// Optional reference to a parent zone which this zone is a sub-zone of.
     ///
@@ -296,7 +297,7 @@ pub struct RecordDelegation {
 }
 
 impl RecordDelegation {
-    pub fn validate(&self, zone_fqdn: &str, record_type: &str, domain: &str) -> bool {
+    pub fn validate(&self, zone_fqdn: &str, record_type: &str, domain: &DomainName) -> bool {
         let record_type = record_type.to_uppercase();
 
         return domain_matches_pattern(&self.pattern.replace('@', zone_fqdn), domain)
@@ -341,7 +342,7 @@ impl Delegation {
 
     /// Verify that a (record type, domain) pair matches the delegation
     /// rules of this delegation.
-    pub fn validate_record(&self, zone_fqdn: &str, record_type: &str, domain: &str) -> bool {
+    pub fn validate_record(&self, zone_fqdn: &str, record_type: &str, domain: &DomainName) -> bool {
         for record_delegation in &self.records {
             if record_delegation.validate(zone_fqdn, record_type, domain) {
                 return true;
@@ -354,7 +355,7 @@ impl Delegation {
 
     /// Verify that a domain matches the zone delegation
     /// rules of this delegation.
-    pub fn validate_zone(&self, parent_fqdn: &str, domain: &str) -> bool {
+    pub fn validate_zone(&self, parent_fqdn: &str, domain: &DomainName) -> bool {
         for zone_delegation in &self.zones {
             if domain_matches_pattern(&zone_delegation.replace('@', parent_fqdn), domain) {
                 return true;
@@ -369,6 +370,7 @@ impl Delegation {
 #[cfg(test)]
 mod tests {
     use kube::core::ObjectMeta;
+    use kubizone_common::DomainName;
 
     use crate::v1alpha1::{Record, RecordSpec, RecordStatus, ZoneStatus};
 
@@ -380,7 +382,7 @@ mod tests {
 
         let zone = Zone {
             spec: ZoneSpec {
-                domain_name: String::from("example.org."),
+                domain_name: DomainName::from("example.org."),
                 zone_ref: None,
                 delegations: vec![Delegation {
                     namespaces: vec![String::from("default")],
@@ -406,7 +408,7 @@ mod tests {
                 ..Default::default()
             },
             spec: RecordSpec {
-                domain_name: String::from("www.example.org."),
+                domain_name: DomainName::from("www.example.org."),
                 zone_ref: None,
                 type_: String::from("A"),
                 class: String::from("IN"),
@@ -425,7 +427,7 @@ mod tests {
                 ..Default::default()
             },
             spec: RecordSpec {
-                domain_name: String::from("www.example.org."),
+                domain_name: DomainName::from("www.example.org."),
                 zone_ref: None,
                 type_: String::from("A"),
                 class: String::from("IN"),
@@ -442,7 +444,7 @@ mod tests {
                 ..Default::default()
             },
             spec: RecordSpec {
-                domain_name: String::from("www.test.com."),
+                domain_name: DomainName::from("www.test.com."),
                 zone_ref: None,
                 type_: String::from("A"),
                 class: String::from("IN"),
@@ -457,7 +459,7 @@ mod tests {
     fn test_record_type_limit() {
         let zone = Zone {
             spec: ZoneSpec {
-                domain_name: String::from("example.org."),
+                domain_name: DomainName::from("example.org."),
                 zone_ref: None,
                 delegations: vec![Delegation {
                     namespaces: vec![String::from("default")],
@@ -484,7 +486,7 @@ mod tests {
                 ..Default::default()
             },
             spec: RecordSpec {
-                domain_name: String::from("example.org."),
+                domain_name: DomainName::from("example.org."),
                 zone_ref: None,
                 type_: String::from("MX"),
                 class: String::from("IN"),
@@ -504,7 +506,7 @@ mod tests {
                 ..Default::default()
             },
             spec: RecordSpec {
-                domain_name: String::from("example.org."),
+                domain_name: DomainName::from("example.org."),
                 zone_ref: None,
                 type_: String::from("A"),
                 class: String::from("IN"),
