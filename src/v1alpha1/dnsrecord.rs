@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use kube::{CustomResource, ResourceExt};
-use kubizone_common::DomainName;
+use kubizone_common::{DomainName, FullyQualifiedDomainName};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -45,14 +45,12 @@ pub struct RecordSpec {
 
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 pub struct RecordStatus {
-    pub fqdn: Option<String>,
+    pub fqdn: Option<FullyQualifiedDomainName>,
 }
 
 impl Record {
-    pub fn fqdn(&self) -> Option<&str> {
-        self.status
-            .as_ref()
-            .and_then(|status| status.fqdn.as_deref())
+    pub fn fqdn(&self) -> Option<&FullyQualifiedDomainName> {
+        self.status.as_ref().and_then(|status| status.fqdn.as_ref())
     }
 }
 

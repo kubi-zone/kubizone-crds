@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use kube::{core::object::HasSpec, CustomResource, ResourceExt};
-use kubizone_common::DomainName;
+use kubizone_common::{DomainName, FullyQualifiedDomainName};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tracing::*;
@@ -150,10 +150,8 @@ impl Zone {
     }
 
     /// Fetch the computed FQDN from this zone, if one has been set.
-    pub fn fqdn(&self) -> Option<&str> {
-        self.status
-            .as_ref()
-            .and_then(|status| status.fqdn.as_deref())
+    pub fn fqdn(&self) -> Option<&FullyQualifiedDomainName> {
+        self.status.as_ref().and_then(|status| status.fqdn.as_ref())
     }
 
     pub fn hash(&self) -> Option<&str> {
@@ -180,7 +178,7 @@ impl Zone {
 
         if !record
             .fqdn()
-            .is_some_and(|fqdn| fqdn.ends_with(parent_fqdn))
+            .is_some_and(|fqdn| fqdn.is_subdomain_of(parent_fqdn))
         {
             trace!("record {record_fqdn} is not a subdomain of {parent_fqdn}");
             return false;
@@ -214,7 +212,7 @@ impl Zone {
             return false;
         };
 
-        if zone_fqdn.ends_with(parent_fqdn) {
+        if !zone_fqdn.is_subdomain_of(parent_fqdn) {
             trace!("zone {} is not a subdomain of {}", zone_fqdn, parent_fqdn);
             return false;
         }
@@ -257,7 +255,7 @@ pub struct ZoneStatus {
     /// this will be the concatenated version of this zone's `.spec.domainName`
     /// and the parent's `.status.fqdn`
     #[serde(default)]
-    pub fqdn: Option<String>,
+    pub fqdn: Option<FullyQualifiedDomainName>,
 
     /// Hash value of all relevant zone entries.
     #[serde(default)]
@@ -275,7 +273,7 @@ pub struct ZoneStatus {
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema, Hash)]
 #[serde(rename_all = "camelCase")]
 pub struct ZoneEntry {
-    pub fqdn: String,
+    pub fqdn: FullyQualifiedDomainName,
     #[serde(rename = "type")]
     pub type_: String,
     pub class: String,
@@ -297,10 +295,15 @@ pub struct RecordDelegation {
 }
 
 impl RecordDelegation {
-    pub fn validate(&self, zone_fqdn: &str, record_type: &str, domain: &DomainName) -> bool {
+    pub fn validate(
+        &self,
+        zone_fqdn: &FullyQualifiedDomainName,
+        record_type: &str,
+        domain: &DomainName,
+    ) -> bool {
         let record_type = record_type.to_uppercase();
 
-        return domain_matches_pattern(&self.pattern.replace('@', zone_fqdn), domain)
+        return domain_matches_pattern(&self.pattern.replace('@', zone_fqdn.as_ref()), domain)
             && (self.types.is_empty()
                 || self
                     .types
@@ -342,7 +345,12 @@ impl Delegation {
 
     /// Verify that a (record type, domain) pair matches the delegation
     /// rules of this delegation.
-    pub fn validate_record(&self, zone_fqdn: &str, record_type: &str, domain: &DomainName) -> bool {
+    pub fn validate_record(
+        &self,
+        zone_fqdn: &FullyQualifiedDomainName,
+        record_type: &str,
+        domain: &DomainName,
+    ) -> bool {
         for record_delegation in &self.records {
             if record_delegation.validate(zone_fqdn, record_type, domain) {
                 return true;
@@ -355,9 +363,13 @@ impl Delegation {
 
     /// Verify that a domain matches the zone delegation
     /// rules of this delegation.
-    pub fn validate_zone(&self, parent_fqdn: &str, domain: &DomainName) -> bool {
+    pub fn validate_zone(
+        &self,
+        parent_fqdn: &FullyQualifiedDomainName,
+        domain: &DomainName,
+    ) -> bool {
         for zone_delegation in &self.zones {
-            if domain_matches_pattern(&zone_delegation.replace('@', parent_fqdn), domain) {
+            if domain_matches_pattern(&zone_delegation.replace('@', parent_fqdn.as_ref()), domain) {
                 return true;
             }
         }
@@ -370,7 +382,7 @@ impl Delegation {
 #[cfg(test)]
 mod tests {
     use kube::core::ObjectMeta;
-    use kubizone_common::DomainName;
+    use kubizone_common::{DomainName, FullyQualifiedDomainName};
 
     use crate::v1alpha1::{Record, RecordSpec, RecordStatus, ZoneStatus};
 
@@ -395,7 +407,7 @@ mod tests {
                 ..Default::default()
             },
             status: Some(ZoneStatus {
-                fqdn: Some(String::from("example.org.")),
+                fqdn: Some(FullyQualifiedDomainName::try_from("example.org.").unwrap()),
                 ..Default::default()
             }),
             metadata: kube::core::ObjectMeta::default(),
@@ -416,7 +428,7 @@ mod tests {
                 rdata: String::from("192.168.0.1")
             },
             status: Some(RecordStatus {
-                fqdn: Some(String::from("www.example.org."))
+                fqdn: Some(FullyQualifiedDomainName::try_from("www.example.org.").unwrap())
             })
         }));
 
@@ -472,7 +484,7 @@ mod tests {
                 ..Default::default()
             },
             status: Some(ZoneStatus {
-                fqdn: Some(String::from("example.org.")),
+                fqdn: Some(FullyQualifiedDomainName::try_from("example.org.").unwrap()),
                 ..Default::default()
             }),
             metadata: kube::core::ObjectMeta::default(),
@@ -494,7 +506,7 @@ mod tests {
                 rdata: String::from("10 mail1.example.org.")
             },
             status: Some(RecordStatus {
-                fqdn: Some(String::from("example.org."))
+                fqdn: Some(FullyQualifiedDomainName::try_from("example.org.").unwrap())
             })
         }));
 
