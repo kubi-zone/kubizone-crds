@@ -7,6 +7,8 @@ use serde::de::DeserializeOwned;
 
 pub const PARENT_ZONE_LABEL: &str = "kubi.zone/parent-zone";
 
+pub use kubizone_common;
+
 pub fn watch_reference<Parent, K>(label: &'static str) -> impl Fn(K) -> Option<ObjectRef<Parent>>
 where
     K: ResourceExt,
