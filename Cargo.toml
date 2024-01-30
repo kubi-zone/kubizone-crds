@@ -10,7 +10,9 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-kubizone-common = "0.4.0"
+# Temporarily use git, because of crates.io rate limit
+#kubizone-common = "0.7.0"
+kubizone-common = { git = "https://github.com/kubi-zone/kubizone-common.git", ref = "v0.7.0" }
 tracing = "0.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
