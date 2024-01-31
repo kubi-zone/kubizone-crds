@@ -37,8 +37,10 @@ impl Display for ZoneRef {
 }
 
 pub mod defaults {
-    pub const CLASS: &str = "IN";
-    pub(super) fn class() -> String {
-        CLASS.to_string()
+    use kubizone_common::Class;
+
+    pub const CLASS: Class = Class::IN;
+    pub(super) fn class() -> Class {
+        CLASS
     }
 }

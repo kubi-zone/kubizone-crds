@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use kube::{core::object::HasSpec, CustomResource, ResourceExt};
-use kubizone_common::{DomainName, FullyQualifiedDomainName, Pattern};
+use kubizone_common::{DomainName, FullyQualifiedDomainName, Pattern, Type};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tracing::*;
@@ -188,7 +188,7 @@ impl Zone {
             delegation.covers_namespace(&record.namespace().unwrap_or_default())
                 && delegation.validate_record(
                     parent_fqdn,
-                    &record.spec.type_,
+                    record.spec.type_,
                     &record.spec.domain_name,
                 )
         }) {
@@ -291,24 +291,18 @@ pub struct RecordDelegation {
 
     /// Type of record to allow. Empty list implies *any*.
     #[serde(default)]
-    pub types: Vec<String>,
+    pub types: Vec<Type>,
 }
 
 impl RecordDelegation {
     pub fn validate(
         &self,
         zone_fqdn: &FullyQualifiedDomainName,
-        record_type: &str,
+        record_type: Type,
         domain: &DomainName,
     ) -> bool {
-        let record_type = record_type.to_uppercase();
-
-        return self.pattern.with_origin(zone_fqdn).matches(domain)
-            && (self.types.is_empty()
-                || self
-                    .types
-                    .iter()
-                    .any(|delegated_type| delegated_type.to_uppercase() == record_type));
+        self.pattern.with_origin(zone_fqdn).matches(domain)
+            && (self.types.is_empty() || self.types.contains(&record_type))
     }
 }
 
@@ -348,7 +342,7 @@ impl Delegation {
     pub fn validate_record(
         &self,
         zone_fqdn: &FullyQualifiedDomainName,
-        record_type: &str,
+        record_type: Type,
         domain: &DomainName,
     ) -> bool {
         for record_delegation in &self.records {
@@ -382,7 +376,7 @@ impl Delegation {
 #[cfg(test)]
 mod tests {
     use kube::core::ObjectMeta;
-    use kubizone_common::{DomainName, FullyQualifiedDomainName, Pattern};
+    use kubizone_common::{Class, DomainName, FullyQualifiedDomainName, Pattern, Type};
 
     use crate::v1alpha1::{Record, RecordSpec, RecordStatus, ZoneStatus};
 
@@ -422,8 +416,8 @@ mod tests {
             spec: RecordSpec {
                 domain_name: DomainName::try_from("www.example.org.").unwrap(),
                 zone_ref: None,
-                type_: String::from("A"),
-                class: String::from("IN"),
+                type_: Type::A,
+                class: Class::IN,
                 ttl: None,
                 rdata: String::from("192.168.0.1")
             },
@@ -441,8 +435,8 @@ mod tests {
             spec: RecordSpec {
                 domain_name: DomainName::try_from("www.example.org.").unwrap(),
                 zone_ref: None,
-                type_: String::from("A"),
-                class: String::from("IN"),
+                type_: Type::A,
+                class: Class::IN,
                 ttl: None,
                 rdata: String::from("192.168.0.1")
             },
@@ -458,8 +452,8 @@ mod tests {
             spec: RecordSpec {
                 domain_name: DomainName::try_from("www.test.com.").unwrap(),
                 zone_ref: None,
-                type_: String::from("A"),
-                class: String::from("IN"),
+                type_: Type::A,
+                class: Class::IN,
                 ttl: None,
                 rdata: String::from("192.168.0.1")
             },
@@ -478,7 +472,7 @@ mod tests {
                     zones: vec![],
                     records: vec![RecordDelegation {
                         pattern: Pattern::try_from("example.org.").unwrap(),
-                        types: vec![String::from("MX")],
+                        types: vec![Type::MX],
                     }],
                 }],
                 ..Default::default()
@@ -500,8 +494,8 @@ mod tests {
             spec: RecordSpec {
                 domain_name: DomainName::try_from("example.org.").unwrap(),
                 zone_ref: None,
-                type_: String::from("MX"),
-                class: String::from("IN"),
+                type_: Type::MX,
+                class: Class::IN,
                 ttl: None,
                 rdata: String::from("10 mail1.example.org.")
             },
@@ -520,8 +514,8 @@ mod tests {
             spec: RecordSpec {
                 domain_name: DomainName::try_from("example.org.").unwrap(),
                 zone_ref: None,
-                type_: String::from("A"),
-                class: String::from("IN"),
+                type_: Type::A,
+                class: Class::IN,
                 ttl: None,
                 rdata: String::from("192.168.0.1")
             },

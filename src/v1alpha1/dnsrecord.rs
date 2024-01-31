@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use kube::{CustomResource, ResourceExt};
-use kubizone_common::{DomainName, FullyQualifiedDomainName};
+use kubizone_common::{Class, DomainName, FullyQualifiedDomainName, Type};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -36,9 +36,9 @@ pub struct RecordSpec {
     pub domain_name: DomainName,
     pub zone_ref: Option<ZoneRef>,
     #[serde(rename = "type")]
-    pub type_: String,
+    pub type_: Type,
     #[serde(default = "super::defaults::class")]
-    pub class: String,
+    pub class: Class,
     pub ttl: Option<u32>,
     pub rdata: String,
 }

@@ -41,6 +41,10 @@ spec:
             properties:
               class:
                 default: IN
+                enum:
+                - IN
+                - CH
+                - HS
                 type: string
               domainName:
                 oneOf:
@@ -62,6 +66,54 @@ spec:
                 nullable: true
                 type: integer
               type:
+                enum:
+                - A
+                - AAAA
+                - AFSDB
+                - APL
+                - CAA
+                - CDNSKEY
+                - CDS
+                - CERT
+                - CNAME
+                - CSYNC
+                - DHCID
+                - DLV
+                - DNAME
+                - DNSKEY
+                - DS
+                - EUI48
+                - EUI64
+                - HINFO
+                - HIP
+                - HTTPS
+                - IPSECKEY
+                - KEY
+                - KX
+                - LOC
+                - MX
+                - NAPTR
+                - NS
+                - NSEC
+                - NSEC3
+                - NSEC3PARAM
+                - OPENPGPKEY
+                - PTR
+                - RRSIG
+                - RP
+                - SIG
+                - SMIMEA
+                - SOA
+                - SRV
+                - SSHFP
+                - SVCB
+                - TA
+                - TKEY
+                - TLSA
+                - TSIG
+                - TXT
+                - URI
+                - ZONEMD
                 type: string
               zoneRef:
                 nullable: true
