@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use kube::{core::object::HasSpec, CustomResource, ResourceExt};
-use kubizone_common::{DomainName, FullyQualifiedDomainName, Pattern, Type};
+use kubizone_common::{Class, DomainName, FullyQualifiedDomainName, Pattern, Type};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tracing::*;
@@ -275,8 +275,8 @@ pub struct ZoneStatus {
 pub struct ZoneEntry {
     pub fqdn: FullyQualifiedDomainName,
     #[serde(rename = "type")]
-    pub type_: String,
-    pub class: String,
+    pub type_: Type,
+    pub class: Class,
     pub ttl: u32,
     pub rdata: String,
 }
