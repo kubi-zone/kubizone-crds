@@ -1,9 +1,9 @@
-mod dnsrecord;
+mod record;
 mod zone;
 
 use std::fmt::Display;
 
-pub use dnsrecord::*;
+pub use record::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use zone::*;
