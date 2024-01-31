@@ -47,17 +47,9 @@ spec:
                 - HS
                 type: string
               domainName:
-                oneOf:
-                - required:
-                  - Full
-                - required:
-                  - Partial
-                properties:
-                  Full:
-                    type: string
-                  Partial:
-                    type: string
-                type: object
+                anyOf:
+                - type: string
+                - type: string
               rdata:
                 type: string
               ttl:

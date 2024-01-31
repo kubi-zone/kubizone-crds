@@ -118,17 +118,9 @@ spec:
                   type: object
                 type: array
               domainName:
-                oneOf:
-                - required:
-                  - Full
-                - required:
-                  - Partial
-                properties:
-                  Full:
-                    type: string
-                  Partial:
-                    type: string
-                type: object
+                anyOf:
+                - type: string
+                - type: string
               expire:
                 default: 3600000
                 description: |-
@@ -212,6 +204,10 @@ spec:
                 items:
                   properties:
                     class:
+                      enum:
+                      - IN
+                      - CH
+                      - HS
                       type: string
                     fqdn:
                       type: string
@@ -222,6 +218,54 @@ spec:
                       minimum: 0.0
                       type: integer
                     type:
+                      enum:
+                      - A
+                      - AAAA
+                      - AFSDB
+                      - APL
+                      - CAA
+                      - CDNSKEY
+                      - CDS
+                      - CERT
+                      - CNAME
+                      - CSYNC
+                      - DHCID
+                      - DLV
+                      - DNAME
+                      - DNSKEY
+                      - DS
+                      - EUI48
+                      - EUI64
+                      - HINFO
+                      - HIP
+                      - HTTPS
+                      - IPSECKEY
+                      - KEY
+                      - KX
+                      - LOC
+                      - MX
+                      - NAPTR
+                      - NS
+                      - NSEC
+                      - NSEC3
+                      - NSEC3PARAM
+                      - OPENPGPKEY
+                      - PTR
+                      - RRSIG
+                      - RP
+                      - SIG
+                      - SMIMEA
+                      - SOA
+                      - SRV
+                      - SSHFP
+                      - SVCB
+                      - TA
+                      - TKEY
+                      - TLSA
+                      - TSIG
+                      - TXT
+                      - URI
+                      - ZONEMD
                       type: string
                   required:
                   - class
