@@ -118,9 +118,7 @@ spec:
                   type: object
                 type: array
               domainName:
-                anyOf:
-                - type: string
-                - type: string
+                type: string
               expire:
                 default: 3600000
                 description: |-

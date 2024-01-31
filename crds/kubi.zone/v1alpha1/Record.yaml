@@ -47,9 +47,7 @@ spec:
                 - HS
                 type: string
               domainName:
-                anyOf:
-                - type: string
-                - type: string
+                type: string
               rdata:
                 type: string
               ttl:
