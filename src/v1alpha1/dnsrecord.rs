@@ -54,6 +54,208 @@ impl Record {
     }
 }
 
+impl RecordSpec {
+    pub fn is_internet(&self) -> bool {
+        self.class == Class::IN
+    }
+
+    pub fn is_chaos(&self) -> bool {
+        self.class == Class::CH
+    }
+
+    pub fn is_hesiod(&self) -> bool {
+        self.class == Class::HS
+    }
+
+    pub fn is_a(&self) -> bool {
+        self.type_ == Type::A
+    }
+
+    pub fn is_aaaa(&self) -> bool {
+        self.type_ == Type::AAAA
+    }
+
+    pub fn is_afsdb(&self) -> bool {
+        self.type_ == Type::AFSDB
+    }
+
+    pub fn is_apl(&self) -> bool {
+        self.type_ == Type::APL
+    }
+
+    pub fn is_caa(&self) -> bool {
+        self.type_ == Type::CAA
+    }
+
+    pub fn is_cdnskey(&self) -> bool {
+        self.type_ == Type::CDNSKEY
+    }
+
+    pub fn is_cds(&self) -> bool {
+        self.type_ == Type::CDS
+    }
+
+    pub fn is_cert(&self) -> bool {
+        self.type_ == Type::CERT
+    }
+
+    pub fn is_cname(&self) -> bool {
+        self.type_ == Type::CNAME
+    }
+
+    pub fn is_csync(&self) -> bool {
+        self.type_ == Type::CSYNC
+    }
+
+    pub fn is_dhcid(&self) -> bool {
+        self.type_ == Type::DHCID
+    }
+
+    pub fn is_dlv(&self) -> bool {
+        self.type_ == Type::DLV
+    }
+
+    pub fn is_dname(&self) -> bool {
+        self.type_ == Type::DNAME
+    }
+
+    pub fn is_dnskey(&self) -> bool {
+        self.type_ == Type::DNSKEY
+    }
+
+    pub fn is_ds(&self) -> bool {
+        self.type_ == Type::DS
+    }
+
+    pub fn is_eui48(&self) -> bool {
+        self.type_ == Type::EUI48
+    }
+
+    pub fn is_eui64(&self) -> bool {
+        self.type_ == Type::EUI64
+    }
+
+    pub fn is_hinfo(&self) -> bool {
+        self.type_ == Type::HINFO
+    }
+
+    pub fn is_hip(&self) -> bool {
+        self.type_ == Type::HIP
+    }
+
+    pub fn is_https(&self) -> bool {
+        self.type_ == Type::HTTPS
+    }
+
+    pub fn is_ipseckey(&self) -> bool {
+        self.type_ == Type::IPSECKEY
+    }
+
+    pub fn is_key(&self) -> bool {
+        self.type_ == Type::KEY
+    }
+
+    pub fn is_kx(&self) -> bool {
+        self.type_ == Type::KX
+    }
+
+    pub fn is_loc(&self) -> bool {
+        self.type_ == Type::LOC
+    }
+
+    pub fn is_mx(&self) -> bool {
+        self.type_ == Type::MX
+    }
+
+    pub fn is_naptr(&self) -> bool {
+        self.type_ == Type::NAPTR
+    }
+
+    pub fn is_ns(&self) -> bool {
+        self.type_ == Type::NS
+    }
+
+    pub fn is_nsec(&self) -> bool {
+        self.type_ == Type::NSEC
+    }
+
+    pub fn is_nsec3(&self) -> bool {
+        self.type_ == Type::NSEC3
+    }
+
+    pub fn is_nsec3param(&self) -> bool {
+        self.type_ == Type::NSEC3PARAM
+    }
+
+    pub fn is_openpgpkey(&self) -> bool {
+        self.type_ == Type::OPENPGPKEY
+    }
+
+    pub fn is_ptr(&self) -> bool {
+        self.type_ == Type::PTR
+    }
+
+    pub fn is_rrsig(&self) -> bool {
+        self.type_ == Type::RRSIG
+    }
+
+    pub fn is_rp(&self) -> bool {
+        self.type_ == Type::RP
+    }
+
+    pub fn is_sig(&self) -> bool {
+        self.type_ == Type::SIG
+    }
+
+    pub fn is_smimea(&self) -> bool {
+        self.type_ == Type::SMIMEA
+    }
+
+    pub fn is_soa(&self) -> bool {
+        self.type_ == Type::SOA
+    }
+
+    pub fn is_srv(&self) -> bool {
+        self.type_ == Type::SRV
+    }
+
+    pub fn is_sshfp(&self) -> bool {
+        self.type_ == Type::SSHFP
+    }
+
+    pub fn is_svcb(&self) -> bool {
+        self.type_ == Type::SVCB
+    }
+
+    pub fn is_ta(&self) -> bool {
+        self.type_ == Type::TA
+    }
+
+    pub fn is_tkey(&self) -> bool {
+        self.type_ == Type::TKEY
+    }
+
+    pub fn is_tlsa(&self) -> bool {
+        self.type_ == Type::TLSA
+    }
+
+    pub fn is_tsig(&self) -> bool {
+        self.type_ == Type::TSIG
+    }
+
+    pub fn is_txt(&self) -> bool {
+        self.type_ == Type::TXT
+    }
+
+    pub fn is_uri(&self) -> bool {
+        self.type_ == Type::URI
+    }
+
+    pub fn is_zonemd(&self) -> bool {
+        self.type_ == Type::ZONEMD
+    }
+}
+
 impl Display for Record {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // Unwrap safety: Records are namespaced and therefore always have a name.
