@@ -408,7 +408,7 @@ mod tests {
                     namespaces: vec![String::from("default")],
                     zones: vec![],
                     records: vec![RecordDelegation {
-                        pattern: Pattern::try_from("*.example.org").unwrap(),
+                        pattern: Pattern::try_from("*").unwrap(),
                         types: vec![],
                     }],
                 }],
@@ -485,7 +485,7 @@ mod tests {
                     namespaces: vec![String::from("default")],
                     zones: vec![],
                     records: vec![RecordDelegation {
-                        pattern: Pattern::try_from("example.org.").unwrap(),
+                        pattern: Pattern::origin(),
                         types: vec![Type::MX],
                     }],
                 }],
@@ -497,6 +497,8 @@ mod tests {
             }),
             metadata: kube::core::ObjectMeta::default(),
         };
+
+        println!("{zone:#?}");
 
         // Record in delegated namespace with delegated record type
         // (MX) should be allowed.
