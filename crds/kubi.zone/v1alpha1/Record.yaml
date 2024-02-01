@@ -41,6 +41,7 @@ spec:
             properties:
               class:
                 default: IN
+                description: Domain Name System class.
                 enum:
                 - IN
                 - CH
@@ -56,6 +57,7 @@ spec:
                 nullable: true
                 type: integer
               type:
+                description: Domain Name System type.
                 enum:
                 - A
                 - AAAA

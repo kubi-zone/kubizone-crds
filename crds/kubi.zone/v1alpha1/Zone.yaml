@@ -56,6 +56,7 @@ spec:
                             default: []
                             description: Type of record to allow. Empty list implies *any*.
                             items:
+                              description: Domain Name System type.
                               enum:
                               - A
                               - AAAA
@@ -202,6 +203,7 @@ spec:
                 items:
                   properties:
                     class:
+                      description: Domain Name System class.
                       enum:
                       - IN
                       - CH
@@ -216,6 +218,7 @@ spec:
                       minimum: 0.0
                       type: integer
                     type:
+                      description: Domain Name System type.
                       enum:
                       - A
                       - AAAA
