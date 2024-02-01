@@ -186,11 +186,7 @@ impl Zone {
 
         if self.spec().delegations.iter().any(|delegation| {
             delegation.covers_namespace(&record.namespace().unwrap_or_default())
-                && delegation.validate_record(
-                    parent_fqdn,
-                    record.spec.type_,
-                    &record_fqdn.clone().into(),
-                )
+                && delegation.validate_record(parent_fqdn, record.spec.type_, record_fqdn)
         }) {
             debug!("zone {parent_fqdn} allows delegation to record {record_fqdn}");
             true
@@ -224,7 +220,7 @@ impl Zone {
 
         self.spec().delegations.iter().any(|delegation| {
             delegation.covers_namespace(&zone.namespace().unwrap_or_default())
-                && delegation.validate_zone(parent_fqdn, &zone_fqdn.clone().into())
+                && delegation.validate_zone(parent_fqdn, zone_fqdn)
         })
     }
 }
@@ -299,7 +295,7 @@ impl RecordDelegation {
         &self,
         zone_fqdn: &FullyQualifiedDomainName,
         record_type: Type,
-        domain: &DomainName,
+        domain: &FullyQualifiedDomainName,
     ) -> bool {
         self.pattern.with_origin(zone_fqdn).matches(domain)
             && (self.types.is_empty() || self.types.contains(&record_type))
@@ -343,7 +339,7 @@ impl Delegation {
         &self,
         zone_fqdn: &FullyQualifiedDomainName,
         record_type: Type,
-        domain: &DomainName,
+        domain: &FullyQualifiedDomainName,
     ) -> bool {
         for record_delegation in &self.records {
             trace!(
@@ -367,17 +363,10 @@ impl Delegation {
     pub fn validate_zone(
         &self,
         parent_fqdn: &FullyQualifiedDomainName,
-        domain: &DomainName,
+        domain: &FullyQualifiedDomainName,
     ) -> bool {
         for zone_delegation in &self.zones {
-            let with_origin = zone_delegation.with_origin(parent_fqdn);
-
-            trace!(
-                "{:?} matches {domain} ? {}",
-                with_origin,
-                with_origin.matches(domain)
-            );
-            if with_origin.matches(domain) {
+            if zone_delegation.with_origin(parent_fqdn).matches(domain) {
                 return true;
             }
         }
