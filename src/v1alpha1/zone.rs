@@ -178,7 +178,7 @@ impl Zone {
 
         if !record
             .fqdn()
-            .is_some_and(|fqdn| fqdn.is_subdomain_of(parent_fqdn))
+            .is_some_and(|fqdn| fqdn == parent_fqdn || fqdn.is_subdomain_of(parent_fqdn))
         {
             trace!("record {record_fqdn} is not a subdomain of {parent_fqdn}");
             return false;
@@ -189,7 +189,7 @@ impl Zone {
                 && delegation.validate_record(
                     parent_fqdn,
                     record.spec.type_,
-                    &record.spec.domain_name,
+                    &record_fqdn.clone().into(),
                 )
         }) {
             debug!("zone {parent_fqdn} allows delegation to record {record_fqdn}");
@@ -224,7 +224,7 @@ impl Zone {
 
         self.spec().delegations.iter().any(|delegation| {
             delegation.covers_namespace(&zone.namespace().unwrap_or_default())
-                && delegation.validate_zone(parent_fqdn, &zone.spec.domain_name)
+                && delegation.validate_zone(parent_fqdn, &zone_fqdn.clone().into())
         })
     }
 }
@@ -346,6 +346,13 @@ impl Delegation {
         domain: &DomainName,
     ) -> bool {
         for record_delegation in &self.records {
+            trace!(
+                "{:?} {} matches {} ? {}",
+                record_delegation,
+                record_type,
+                domain,
+                record_delegation.validate(zone_fqdn, record_type, domain)
+            );
             if record_delegation.validate(zone_fqdn, record_type, domain) {
                 return true;
             }
@@ -363,7 +370,14 @@ impl Delegation {
         domain: &DomainName,
     ) -> bool {
         for zone_delegation in &self.zones {
-            if zone_delegation.with_origin(parent_fqdn).matches(domain) {
+            let with_origin = zone_delegation.with_origin(parent_fqdn);
+
+            trace!(
+                "{:?} matches {domain} ? {}",
+                with_origin,
+                with_origin.matches(domain)
+            );
+            if with_origin.matches(domain) {
                 return true;
             }
         }
