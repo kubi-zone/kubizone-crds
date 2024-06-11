@@ -1,3 +1,9 @@
+## Unreleased
+
+### Added
+* Kubernetes API version feature selector.
+
+
 ## 0.11.1
 
 ### Added
