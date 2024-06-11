@@ -87,8 +87,17 @@ pub mod defaults {
 #[kube(printcolumn = r#"{"name":"fqdn", "jsonPath": ".status.fqdn", "type": "string"}"#)]
 #[kube(printcolumn = r#"{"name":"hash", "jsonPath": ".status.hash", "type": "string"}"#)]
 #[kube(printcolumn = r#"{"name":"serial", "jsonPath": ".status.serial", "type": "string"}"#)]
-#[kube(
-    printcolumn = r#"{"name":"parent", "jsonPath": ".metadata.labels.kubi\\.zone/parent-zone", "type": "string"}"#
+#[cfg_attr(
+    feature = "dev",
+    kube(
+        printcolumn = r#"{"name":"parent", "jsonPath": ".metadata.labels.kubi\\.zone/parent-zone", "type": "string"}"#
+    )
+)]
+#[cfg_attr(
+    not(feature = "dev"),
+    kube(
+        printcolumn = r#"{"name":"parent", "jsonPath": ".metadata.labels.dev\\.kubi\\.zone/parent-zone", "type": "string"}"#
+    )
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ZoneSpec {

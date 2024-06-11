@@ -1,3 +1,9 @@
+## 0.11.3
+
+### Fixed
+* Extend the dev/prod schema split to parent zone labels as well
+
+
 ## 0.11.2
 
 ### Added

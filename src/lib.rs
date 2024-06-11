@@ -5,6 +5,9 @@ pub mod v1alpha1;
 use kube::{runtime::reflector::ObjectRef, Resource, ResourceExt};
 use serde::de::DeserializeOwned;
 
+#[cfg(feature = "dev")]
+pub const PARENT_ZONE_LABEL: &str = "dev.kubi.zone/parent-zone";
+#[cfg(not(feature = "dev"))]
 pub const PARENT_ZONE_LABEL: &str = "kubi.zone/parent-zone";
 
 pub use kubizone_common;
