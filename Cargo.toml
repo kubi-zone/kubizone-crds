@@ -7,6 +7,10 @@ version = "0.11.0"
 edition = "2021"
 license = "MIT"
 
+[[example]]
+name = "dump"
+path = "src/dump.rs"
+
 [dependencies]
 kubizone-common = "0.13.0"
 tracing = "0.1"
@@ -23,6 +27,7 @@ k8s-openapi = { version = "0.22.0", features = ["v1_29"] }
 
 [dev-dependencies]
 tracing-subscriber = "0.3"
+serde_yaml = "0.9.34"
 
 [features]
 # When enabled, the custom resource definitions will be placed in the dev.kubi.zone
