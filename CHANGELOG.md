@@ -1,4 +1,4 @@
-## Unreleased
+## 0.11.1
 
 ### Added
 * Introduce 'dev' feature for toggling between `kubi.zone` and `dev.kubi.zone` api groups.
