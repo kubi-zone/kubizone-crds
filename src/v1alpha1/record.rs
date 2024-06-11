@@ -21,7 +21,22 @@ use super::ZoneRef;
     PartialOrd,
     Ord,
 )]
-#[kube(group = "kubi.zone", version = "v1alpha1", kind = "Record", namespaced)]
+// The 'dev' feature flag puts the resource in a separate dev.kubi.zone group,
+// instead of the real one. This way you can have the production and dev versions
+// of kubizone resources running side by side, without interfering with each other.
+#[cfg_attr(
+    feature = "dev",
+    kube(
+        group = "dev.kubi.zone",
+        version = "v1alpha1",
+        kind = "Record",
+        namespaced
+    )
+)]
+#[cfg_attr(
+    not(feature = "dev"),
+    kube(group = "kubi.zone", version = "v1alpha1", kind = "Record", namespaced)
+)]
 #[kube(status = "RecordStatus")]
 #[kube(printcolumn = r#"{"name":"domain name", "jsonPath": ".spec.domainName", "type": "string"}"#)]
 #[kube(printcolumn = r#"{"name":"class", "jsonPath": ".spec.class", "type": "string"}"#)]
