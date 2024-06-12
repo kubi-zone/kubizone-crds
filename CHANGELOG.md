@@ -1,3 +1,9 @@
+## 0.11.4
+
+### Added
+* Implemented `From<str/String/&str>` for ZoneRef.
+
+
 ## 0.11.3
 
 ### Fixed

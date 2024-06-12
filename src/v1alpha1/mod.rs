@@ -1,7 +1,7 @@
 mod record;
 mod zone;
 
-use std::fmt::Display;
+use std::{fmt::Display, str::FromStr};
 
 pub use record::*;
 use schemars::JsonSchema;
@@ -23,6 +23,34 @@ impl ZoneRef {
         } else {
             self.name.clone()
         }
+    }
+}
+
+impl From<&str> for ZoneRef {
+    fn from(s: &str) -> Result<Self, Self::Err> {
+        if let Ok((namespace, name)) = s.split_once('.') {
+            Ok(ZoneRef {
+                name: name.to_string(),
+                namespace: Some(namespace.to_string()),
+            })
+        } else {
+            Ok(ZoneRef {
+                name: s.to_string(),
+                namespace: None,
+            })
+        }
+    }
+}
+
+impl From<&String> for ZoneRef {
+    fn from(value: &String) -> Self {
+        ZoneRef::from(value.as_deref())
+    }
+}
+
+impl From<String> for ZoneRef {
+    fn from(value: String) -> Self {
+        ZoneRef::from(value.as_deref())
     }
 }
 
