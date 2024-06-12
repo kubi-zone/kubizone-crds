@@ -1,11 +1,13 @@
 use std::fmt::Display;
 
-use kube::{CustomResource, ResourceExt};
+use kube::{CustomResource, Resource, ResourceExt};
 use kubizone_common::{Class, DomainName, FullyQualifiedDomainName, Type};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::ZoneRef;
+use crate::PARENT_ZONE_LABEL;
+
+use super::{DomainExt, ZoneRef};
 
 #[derive(
     CustomResource,
@@ -63,9 +65,17 @@ pub struct RecordStatus {
     pub fqdn: Option<FullyQualifiedDomainName>,
 }
 
-impl Record {
-    pub fn fqdn(&self) -> Option<&FullyQualifiedDomainName> {
+impl DomainExt for Record {
+    fn fqdn(&self) -> Option<&FullyQualifiedDomainName> {
         self.status.as_ref().and_then(|status| status.fqdn.as_ref())
+    }
+
+    fn parent(&self) -> Option<ZoneRef> {
+        self.meta()
+            .labels
+            .as_ref()?
+            .get(PARENT_ZONE_LABEL)
+            .map(ZoneRef::from)
     }
 }
 

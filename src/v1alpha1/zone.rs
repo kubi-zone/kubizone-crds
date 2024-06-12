@@ -1,12 +1,14 @@
 use std::fmt::Display;
 
-use kube::{core::object::HasSpec, CustomResource, ResourceExt};
+use kube::{core::object::HasSpec, CustomResource, Resource as _, ResourceExt};
 use kubizone_common::{Class, DomainName, FullyQualifiedDomainName, Pattern, Type};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tracing::*;
 
-use super::{Record, ZoneRef};
+use crate::PARENT_ZONE_LABEL;
+
+use super::{DomainExt, Record, ZoneRef};
 
 pub mod defaults {
 
@@ -173,17 +175,14 @@ impl Zone {
         }
     }
 
-    /// Fetch the computed FQDN from this zone, if one has been set.
-    pub fn fqdn(&self) -> Option<&FullyQualifiedDomainName> {
-        self.status.as_ref().and_then(|status| status.fqdn.as_ref())
-    }
-
+    /// Retrieve the hash value of this zone, if present.
     pub fn hash(&self) -> Option<&str> {
         self.status
             .as_ref()
             .and_then(|status| status.hash.as_deref())
     }
 
+    /// Retrieve the computed serial of this zone, if present.
     pub fn serial(&self) -> Option<u32> {
         self.status.as_ref().and_then(|status| status.serial)
     }
@@ -246,6 +245,20 @@ impl Zone {
             delegation.covers_namespace(&zone.namespace().unwrap_or_default())
                 && delegation.validate_zone(parent_fqdn, zone_fqdn)
         })
+    }
+}
+
+impl DomainExt for Zone {
+    fn fqdn(&self) -> Option<&FullyQualifiedDomainName> {
+        self.status.as_ref().and_then(|status| status.fqdn.as_ref())
+    }
+
+    fn parent(&self) -> Option<ZoneRef> {
+        self.meta()
+            .labels
+            .as_ref()?
+            .get(PARENT_ZONE_LABEL)
+            .map(ZoneRef::from)
     }
 }
 

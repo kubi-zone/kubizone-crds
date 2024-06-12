@@ -1,4 +1,8 @@
-## 0.11.4
+
+## 0.12.0
+
+### Changed
+* Introduced `DomainExt` trait which covers functionality common between Zones and Records, such as fetching computed Fully Qualified Domain Name, parsing parent zone labels.
 
 ### Added
 * Implemented `From<str/String/&str>` for ZoneRef.
