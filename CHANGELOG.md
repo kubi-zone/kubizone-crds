@@ -1,4 +1,9 @@
 
+## 0.12.1
+
+### Changed
+* Updated kube-rs to v0.92.0
+
 ## 0.12.0
 
 ### Changed
