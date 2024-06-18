@@ -1,4 +1,9 @@
 
+## 0.12.2
+
+### Fixed
+* Improper parsing of ZoneRefs from strings
+
 ## 0.12.1
 
 ### Changed

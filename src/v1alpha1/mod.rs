@@ -41,7 +41,7 @@ impl ZoneRef {
 
 impl From<&str> for ZoneRef {
     fn from(s: &str) -> Self {
-        if let Some((namespace, name)) = s.split_once('.') {
+        if let Some((name, namespace)) = s.split_once('.') {
             ZoneRef {
                 name: name.to_string(),
                 namespace: Some(namespace.to_string()),

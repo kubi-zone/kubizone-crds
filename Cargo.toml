@@ -3,7 +3,7 @@ name = "kubizone-crds"
 description = "Rust library exposing the Kubizone CRDs as types."
 keywords = ["kubernetes", "kubizone", "crd"]
 repository = "https://github.com/kubi-zone/kubizone-crds"
-version = "0.12.1"
+version = "0.12.2"
 edition = "2021"
 license = "MIT"
 
