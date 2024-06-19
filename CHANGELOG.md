@@ -1,3 +1,10 @@
+## 0.12.3
+
+### Changed
+* Updated to kubizone_common v0.13.2
+
+### Added
+* Implement `TryFrom<Record>` for the new `kubizone_common::RecordIdent`.
 
 ## 0.12.2
 
