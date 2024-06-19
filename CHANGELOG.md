@@ -1,3 +1,9 @@
+## 0.12.4
+
+### Added
+* Implement `From<ZoneEntry>` for `kubizone_common::RecordIdent`.
+
+
 ## 0.12.3
 
 ### Changed

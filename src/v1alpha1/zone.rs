@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use kube::{core::object::HasSpec, CustomResource, Resource as _, ResourceExt};
-use kubizone_common::{Class, DomainName, FullyQualifiedDomainName, Pattern, Type};
+use kubizone_common::{Class, DomainName, FullyQualifiedDomainName, Pattern, RecordIdent, Type};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tracing::*;
@@ -312,6 +312,16 @@ pub struct ZoneEntry {
     pub class: Class,
     pub ttl: u32,
     pub rdata: String,
+}
+
+impl From<&ZoneEntry> for RecordIdent {
+    fn from(value: &ZoneEntry) -> Self {
+        RecordIdent {
+            fqdn: value.fqdn.clone(),
+            r#type: value.type_,
+            rdata: value.rdata.clone(),
+        }
+    }
 }
 
 #[derive(

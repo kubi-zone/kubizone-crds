@@ -308,7 +308,7 @@ impl TryFrom<&Record> for RecordIdent {
 
         Ok(RecordIdent {
             fqdn: fqdn.clone(),
-            r#type: value.spec.type_.clone(),
+            r#type: value.spec.type_,
             rdata: value.spec.rdata.clone(),
         })
     }
