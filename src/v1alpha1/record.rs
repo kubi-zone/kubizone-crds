@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use kube::{CustomResource, Resource, ResourceExt};
-use kubizone_common::{Class, DomainName, FullyQualifiedDomainName, Type};
+use kubizone_common::{Class, DomainName, FullyQualifiedDomainName, RecordIdent, Type};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -290,5 +290,26 @@ impl Display for Record {
             self.metadata.namespace.as_ref().unwrap(),
             self.name_any()
         )
+    }
+}
+
+impl TryFrom<&Record> for RecordIdent {
+    type Error = &'static str;
+
+    fn try_from(value: &Record) -> Result<Self, Self::Error> {
+        let fqdn = value
+            .status
+            .as_ref()
+            .ok_or("record's status section is not yet populated")?
+            .fqdn
+            .as_ref()
+            .ok_or("record does not yet have a fully qualified domain name")?
+            .clone();
+
+        Ok(RecordIdent {
+            fqdn: fqdn.clone(),
+            r#type: value.spec.type_.clone(),
+            rdata: value.spec.rdata.clone(),
+        })
     }
 }
