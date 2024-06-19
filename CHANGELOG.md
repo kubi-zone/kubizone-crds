@@ -6,15 +6,18 @@
 ### Added
 * Implement `TryFrom<Record>` for the new `kubizone_common::RecordIdent`.
 
+
 ## 0.12.2
 
 ### Fixed
 * Improper parsing of ZoneRefs from strings
 
+
 ## 0.12.1
 
 ### Changed
 * Updated kube-rs to v0.92.0
+
 
 ## 0.12.0
 
